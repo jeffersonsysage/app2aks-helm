@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: "akslabacr1204.azurecr.io/frontend:v1"  # 镜像路径
+        ports:
+        - containerPort: 80
+
+---
+
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: frontend-service
+#   namespace: default
+# spec:
+#   type: LoadBalancer
+#   selector:
+#     app: frontend
+#   ports:
+#     - protocol: TCP
+#       port: 80         # 對外暴露的端口
+#       targetPort: 80    # Pod 的容器端口
+
+---
+
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: frontend-service
+#   namespace: default
+#   annotations:
+#     service.beta.kubernetes.io/azure-load-balancer-resource-group: MC_akslab1122_akslabcluster1204_eastus
+# spec:
+#   type: LoadBalancer
+#   selector:
+#     app: frontend
+#   ports:
+#     - protocol: TCP
+#       port: 80         # 對外暴露的端口
+#       targetPort: 80    # Pod 的容器端口
+#   loadBalancerIP: 52.249.213.109  # 指定靜態 IP 地址
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: default
+spec:
+  type: ClusterIP  # 更改為 ClusterIP，避免直接暴露外部 IP
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
